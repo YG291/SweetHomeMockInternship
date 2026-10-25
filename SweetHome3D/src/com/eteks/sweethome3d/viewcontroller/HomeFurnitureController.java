@@ -1244,6 +1244,7 @@ public class HomeFurnitureController implements Controller {
     private final Float                       width;
     private final Float                       depth;
     private final Float                       height;
+    private final Float                       volume;
     private final FurniturePaint              paint;
     private final Integer                     color;
     private final HomeTexture                 texture;
@@ -1285,6 +1286,7 @@ public class HomeFurnitureController implements Controller {
       this.width = width;
       this.depth = depth;
       this.height = height;
+      this.volume = width*depth*height;
       this.paint = paint;
       this.color = color;
       this.texture = texture;
@@ -1308,7 +1310,7 @@ public class HomeFurnitureController implements Controller {
       super.redo();
       doModifyFurniture(this.modifiedFurniture, 
           this.name, this.nameVisible, this.description, this.price, this.x, this.y, this.elevation, 
-          this.angle, this.basePlanItem, this.width, this.depth, this.height, 
+          this.angle, this.basePlanItem, this.width, this.depth, this.height,
           this.paint, this.color, this.texture, this.modelMaterials, 
           this.defaultShininess, this.shininess,
           this.visible, this.modelMirrored, this.lightPower); 
@@ -1328,7 +1330,7 @@ public class HomeFurnitureController implements Controller {
   private static void doModifyFurniture(ModifiedPieceOfFurniture [] modifiedFurniture, 
                                         String name, Boolean nameVisible, String description, BigDecimal price, 
                                         Float x, Float y, Float elevation, Float angle, Boolean basePlanItem, 
-                                        Float width, Float depth, Float height, 
+                                        Float width, Float depth, Float height,
                                         FurniturePaint paint, Integer color, HomeTexture texture, 
                                         HomeMaterial [] modelMaterials,
                                         boolean defaultShininess, Float shininess,
@@ -1373,6 +1375,9 @@ public class HomeFurnitureController implements Controller {
         }
         if (height != null) {
           piece.setHeight(height);
+        }
+        if (width != null && depth !=null && height != null){
+          piece.setVolume(height*width*depth);
         }
         if (modelMirrored != null) {
           piece.setModelMirrored(modelMirrored);
@@ -1444,6 +1449,7 @@ public class HomeFurnitureController implements Controller {
     private final float                width;
     private final float                depth;
     private final float                height;
+    private final float                volume;
     private final Integer              color;
     private final HomeTexture          texture;
     private final HomeMaterial []      modelMaterials;
@@ -1465,6 +1471,7 @@ public class HomeFurnitureController implements Controller {
       this.width = piece.getWidth();
       this.depth = piece.getDepth();
       this.height = piece.getHeight();
+      this.volume = width*depth*height;
       this.color = piece.getColor();
       this.texture = piece.getTexture();
       this.modelMaterials = piece.getModelMaterials();
@@ -1493,6 +1500,7 @@ public class HomeFurnitureController implements Controller {
         this.piece.setWidth(this.width);
         this.piece.setDepth(this.depth);
         this.piece.setHeight(this.height);
+        this.piece.setVolume(this.volume);
         this.piece.setModelMirrored(this.modelMirrored);
       }
       if (this.piece.isTexturable()) {
