@@ -752,7 +752,7 @@ public class FurnitureTable extends JTable implements View, Printable {
       };
     for (int columnIndex = 0, n = columnModel.getColumnCount(); columnIndex < n; columnIndex++) {
       final TableColumn tableColumn = columnModel.getColumn(columnIndex);
-      if (tableColumn.getIdentifier().equals("LEVEL"))
+      if (tableColumn.getIdentifier().equals(HomePieceOfFurniture.SortableProperty.LEVEL))
       {
         continue;
       }
