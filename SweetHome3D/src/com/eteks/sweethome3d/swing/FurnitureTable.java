@@ -752,6 +752,10 @@ public class FurnitureTable extends JTable implements View, Printable {
       };
     for (int columnIndex = 0, n = columnModel.getColumnCount(); columnIndex < n; columnIndex++) {
       final TableColumn tableColumn = columnModel.getColumn(columnIndex);
+      if (tableColumn.getIdentifier().equals("LEVEL"))
+      {
+        continue;
+      }
       // Create a printable column from existing table column
       TableColumn printableColumn = new TableColumn();
       printableColumn.setIdentifier(tableColumn.getIdentifier());
@@ -778,7 +782,27 @@ public class FurnitureTable extends JTable implements View, Printable {
       // Change printable column header renderer
       printableColumn.setHeaderRenderer(printableHeaderRenderer);
       printableColumnModel.addColumn(printableColumn);
-    }    
+    }
+
+      TableColumn printableColumn = new TableColumn();
+      printableColumn.setHeaderValue("Level");
+      printableColumn.setIdentifier("LEVEL");
+      printableColumn.setCellRenderer(new DefaultTableCellRenderer() {
+        @Override
+        public Component getTableCellRendererComponent(JTable table,
+                                                       Object value, boolean isSelected, boolean hasFocus,
+                                                       int row, int column) {
+          HomePieceOfFurniture piece = (HomePieceOfFurniture)value;
+          Level level = value != null
+                  ? piece.getLevel()
+                  : null;
+          return super.getTableCellRendererComponent(
+                  table, level != null  ? level.getName()  : null, isSelected, hasFocus, row, column);
+        }
+      });
+      // Change printable column header renderer
+      printableColumn.setHeaderRenderer(printableHeaderRenderer);
+      printableColumnModel.addColumn(printableColumn);
     return print(g, pageFormat, pageIndex, printableColumnModel, Color.BLACK);
   }
 
@@ -2003,7 +2027,7 @@ public class FurnitureTable extends JTable implements View, Printable {
     private List<TreeModelListener>                 treeModelListeners;
     private Map<Object, List<HomePieceOfFurniture>> childFurnitureCache;  
     private boolean                                 containsNotViewableFurniture;
-    
+
     public FurnitureTreeTableModel(Home home) {
       this.home = home;
       this.expandedGroups = new HashSet<HomeFurnitureGroup>();
