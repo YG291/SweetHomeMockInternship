@@ -47,17 +47,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.Format;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Currency;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -736,31 +726,35 @@ public class FurnitureTable extends JTable implements View, Printable {
     List<Level> levels = home.getLevels();
     Level oldLevel = home.getSelectedLevel();
     DefaultTableColumnModel printableColumnModel = new DefaultTableColumnModel();
+    final DefaultTableCellRenderer defaultRenderer = new DefaultTableCellRenderer();
 
+    TableCellRenderer printableHeaderRenderer = new TableCellRenderer() {
+      public Component getTableCellRendererComponent(JTable table, Object value,
+                                                     boolean isSelected, boolean hasFocus, int row, int column) {
+        // Delegate rendering to default cell renderer
+        JLabel headerRendererLabel = (JLabel) defaultRenderer.getTableCellRendererComponent(table, value,
+                isSelected, hasFocus, row, column);
+        // Don't display sort icon
+        headerRendererLabel.setIcon(null);
+        // Change header background and foreground
+        headerRendererLabel.setBackground(Color.LIGHT_GRAY);
+        headerRendererLabel.setForeground(Color.BLACK);
+        headerRendererLabel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.BLACK),
+                headerRendererLabel.getBorder()));
+        return headerRendererLabel;
+      }
+    };
+    TableColumn levelprintableColumn = new TableColumn();
+    oldLevel.setViewable(false);
+
+    //need to iterate over all the levels, but make every level except current one "not viewable"
+    // it is implied that if the current level is viewable, then every other level isnt.
+    //need to also ensure that you're ADDING to the table, not simply replacing the table.
     for (Level level : levels) {
-      boolean visibility = level.isViewable();
       level.setViewable(true);
-      printableColumnModel = new DefaultTableColumnModel();
       TableColumnModel columnModel = getColumnModel();
-      final DefaultTableCellRenderer defaultRenderer = new DefaultTableCellRenderer();
       defaultRenderer.setHorizontalAlignment(DefaultTableCellRenderer.CENTER);
-      TableCellRenderer printableHeaderRenderer = new TableCellRenderer() {
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                                                       boolean isSelected, boolean hasFocus, int row, int column) {
-          // Delegate rendering to default cell renderer
-          JLabel headerRendererLabel = (JLabel) defaultRenderer.getTableCellRendererComponent(table, value,
-                  isSelected, hasFocus, row, column);
-          // Don't display sort icon
-          headerRendererLabel.setIcon(null);
-          // Change header background and foreground
-          headerRendererLabel.setBackground(Color.LIGHT_GRAY);
-          headerRendererLabel.setForeground(Color.BLACK);
-          headerRendererLabel.setBorder(BorderFactory.createCompoundBorder(
-                  BorderFactory.createLineBorder(Color.BLACK),
-                  headerRendererLabel.getBorder()));
-          return headerRendererLabel;
-        }
-      };
       //this is looping through the COLUMNS, NOT the items
 
       for (int columnIndex = 0, n = columnModel.getColumnCount(); columnIndex < n; columnIndex++) {
@@ -796,10 +790,9 @@ public class FurnitureTable extends JTable implements View, Printable {
         printableColumnModel.addColumn(printableColumn);
       } //ends here
 
-      TableColumn printableColumn = new TableColumn();
-      printableColumn.setHeaderValue("Level");
-      printableColumn.setIdentifier(HomePieceOfFurniture.SortableProperty.LEVEL);
-      printableColumn.setCellRenderer(new DefaultTableCellRenderer() {
+      levelprintableColumn.setHeaderValue("Level");
+      levelprintableColumn.setIdentifier(HomePieceOfFurniture.SortableProperty.LEVEL);
+      levelprintableColumn.setCellRenderer(new DefaultTableCellRenderer() {
         @Override
         public Component getTableCellRendererComponent(JTable table,
                                                        Object value, boolean isSelected, boolean hasFocus,
@@ -812,10 +805,11 @@ public class FurnitureTable extends JTable implements View, Printable {
                   table, level != null ? level.getName() : null, isSelected, hasFocus, row, column);
         }
       });
-      printableColumn.setHeaderRenderer(printableHeaderRenderer);
-      printableColumnModel.addColumn(printableColumn);
-      level.setViewable(visibility);
+      levelprintableColumn.setHeaderRenderer(printableHeaderRenderer);
+      printableColumnModel.addColumn(levelprintableColumn);
+      level.setViewable(false);
     }
+    oldLevel.setViewable(true);
     // Change printable column header renderer
     return print(g, pageFormat, pageIndex, printableColumnModel, Color.BLACK);
   }
