@@ -504,8 +504,8 @@ public class FurnitureController implements Controller {
   }
 
   /**
-   * Updates the furniture visible properties in home.  
-   */
+   * Updates the furniture visible properties in home.
+   *    */
   public void setFurnitureVisibleProperties(List<HomePieceOfFurniture.SortableProperty> furnitureVisibleProperties) {
     this.home.setFurnitureVisibleProperties(furnitureVisibleProperties);
   }

@@ -726,6 +726,8 @@ public class FurnitureTable extends JTable implements View, Printable {
   /**
    * Prints this component to make it fill <code>pageFormat</code> imageable size.
    */
+
+  //what is "this component"?
   public int print(Graphics g, PageFormat pageFormat, int pageIndex) throws PrinterException {
     // Create a printable column model from the column model of this table 
     // with printable renderers for each column
@@ -750,6 +752,8 @@ public class FurnitureTable extends JTable implements View, Printable {
           return headerRendererLabel;
         }
       };
+    //this is looping through the COLUMNS, NOT the items
+
     for (int columnIndex = 0, n = columnModel.getColumnCount(); columnIndex < n; columnIndex++) {
       final TableColumn tableColumn = columnModel.getColumn(columnIndex);
       if (tableColumn.getIdentifier().equals(HomePieceOfFurniture.SortableProperty.LEVEL))
@@ -782,11 +786,11 @@ public class FurnitureTable extends JTable implements View, Printable {
       // Change printable column header renderer
       printableColumn.setHeaderRenderer(printableHeaderRenderer);
       printableColumnModel.addColumn(printableColumn);
-    }
+    } //ends here
 
       TableColumn printableColumn = new TableColumn();
       printableColumn.setHeaderValue("Level");
-      printableColumn.setIdentifier("LEVEL");
+      printableColumn.setIdentifier(HomePieceOfFurniture.SortableProperty.LEVEL);
       printableColumn.setCellRenderer(new DefaultTableCellRenderer() {
         @Override
         public Component getTableCellRendererComponent(JTable table,
@@ -826,6 +830,9 @@ public class FurnitureTable extends JTable implements View, Printable {
       }
       setGridColor(gridColor);
       Printable printable = getPrintable(PrintMode.FIT_WIDTH, null, null);
+
+      //here is the getPrintable
+
       int pageExists = printable.print(g, pageFormat, pageIndex);
       // Restore column model and grid color to their previous values
       setColumnModel(oldColumnModel);
@@ -944,6 +951,9 @@ public class FurnitureTable extends JTable implements View, Printable {
             break;
           case HEIGHT : 
             writer.write(sizeFormat.format(copiedPiece.getHeight()));
+            break;
+          case VOLUME :
+            writer.write(sizeFormat.format(copiedPiece.getVolume()));
             break;
           case X : 
             writer.write(sizeFormat.format(copiedPiece.getX()));
