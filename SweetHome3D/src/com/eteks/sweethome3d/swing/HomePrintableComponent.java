@@ -180,6 +180,7 @@ public class HomePrintableComponent extends JComponent implements Printable {
     Level oldLevel = home.getSelectedLevel();
     int pageExists = NO_SUCH_PAGE;
     for (Level level : levels) {
+      home.setSelectedLevel(level);
       if (Thread.interrupted()) {
         throw new InterruptedPrinterException();
       }
@@ -339,7 +340,6 @@ public class HomePrintableComponent extends JComponent implements Printable {
         }
       }
 
-      home.setSelectedLevel(level);
       //This gets ONLY the current view.
       View furnitureView = this.controller.getFurnitureController().getView();
       if (furnitureView != null
