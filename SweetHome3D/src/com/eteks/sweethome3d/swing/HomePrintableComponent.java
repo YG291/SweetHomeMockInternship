@@ -335,7 +335,9 @@ public class HomePrintableComponent extends JComponent implements Printable {
       }
     }
 
-    //This gets ONLY the current view.
+    List<Level> levels = home.getLevels();
+    home.setSelectedLevel(levels.get(0));
+    //This selects the view for the pictures
     View furnitureView = this.controller.getFurnitureController().getView();
     if (furnitureView != null
             && (homePrint == null || homePrint.isFurniturePrinted())) {
@@ -346,16 +348,13 @@ public class HomePrintableComponent extends JComponent implements Printable {
               || homePrint.isPlanPrinted()
               || homePrint.isView3DPrinted())) {
 
-        //Me comment This is where they select particular level
-//          final Level selectedLevel = home.getSelectedLevel();
-        final Level selectedLevel = home.getLevels().get(0);
+        //changing this changes what is printed in the table
         furnitureTable = (FurnitureTable) furnitureView;
         furnitureFilter = furnitureTable.getFurnitureFilter();
         furnitureTable.setFurnitureFilter(new FurnitureTable.FurnitureFilter() {
           public boolean include(Home home, HomePieceOfFurniture piece) {
             // Print only furniture at selected level when the plan or the 3D view is printed
             return (furnitureFilter == null || furnitureFilter.include(home, piece))
-                    && piece.isAtLevel(selectedLevel)
                     && (piece.getLevel() == null || piece.getLevel().isViewable());
           }
         });
