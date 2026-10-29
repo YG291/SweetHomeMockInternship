@@ -127,6 +127,7 @@ public class HomePrintableComponent extends JComponent implements Printable {
   private JLabel               fixedFooterLabel;
   private JLabel               fixedFirstPageHeaderLabel;
   private JLabel               fixedFirstPageFooterLabel;
+  private int                  level;
   
   /**
    * Creates a printable component that will print or display the
@@ -138,6 +139,7 @@ public class HomePrintableComponent extends JComponent implements Printable {
     this.controller = controller;
     this.defaultFont = defaultFont;
     this.headerFooterFont = defaultFont.deriveFont(11f);
+    this.level = 0;
     
     try {
       ResourceBundle resource = ResourceBundle.getBundle(HomePrintableComponent.class.getName());
@@ -238,7 +240,9 @@ public class HomePrintableComponent extends JComponent implements Printable {
 
     Rectangle clipBounds = g2D.getClipBounds();
     AffineTransform oldTransform = g2D.getTransform();
-    final PlanView planView = this.controller.getPlanController().getView();
+    List<Level> levels = home.getLevels();
+    home.setSelectedLevel(levels.get(this.level));
+    PlanView planView = this.controller.getPlanController().getView();
     if (homePrint != null
             || fixedHeaderPageLabel != null
             || fixedFooterPageLabel != null) {
@@ -335,8 +339,6 @@ public class HomePrintableComponent extends JComponent implements Printable {
       }
     }
 
-    List<Level> levels = home.getLevels();
-    home.setSelectedLevel(levels.get(0));
     //This selects the view for the pictures
     View furnitureView = this.controller.getFurnitureController().getView();
     if (furnitureView != null
@@ -361,8 +363,12 @@ public class HomePrintableComponent extends JComponent implements Printable {
       } else {
         furnitureFilter = null;
       }
-      // Try to print next furniture view page
+
+
       pageExists = ((Printable) furnitureView).print(g2D, pageFormat, page);
+
+      //this one is from PlanComponent
+
       if (furnitureTable != null) {
         // Restore previous filter
         ((FurnitureTable) furnitureView).setFurnitureFilter(furnitureFilter);
@@ -373,6 +379,7 @@ public class HomePrintableComponent extends JComponent implements Printable {
         this.furniturePageCount++;
       }
     }
+
     if (pageExists == NO_SUCH_PAGE
             && planView != null
             && (homePrint == null || homePrint.isPlanPrinted())) {
@@ -382,6 +389,20 @@ public class HomePrintableComponent extends JComponent implements Printable {
               && !this.printablePages.contains(page)) {
         this.printablePages.add(page);
         this.planPageCount++;
+      }
+      if (pageExists == NO_SUCH_PAGE)
+      {
+        this.planPageCount=0;
+        this.level++;
+        home.setSelectedLevel(levels.get(level));
+        if(!(level >= levels.size())) {
+          pageExists = ((Printable) planView).print(g2D, pageFormat, page - this.furniturePageCount);
+        }
+        if(pageExists == PAGE_EXISTS && !this.printablePages.contains(page))
+        {
+          this.printablePages.add(page);
+          this.planPageCount++;
+        }
       }
     }
     View view3D = this.controller.getHomeController3D().getView();
