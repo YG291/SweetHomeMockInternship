@@ -141,6 +141,8 @@ public class HomePrintableComponent extends JComponent implements Printable {
     this.defaultFont = defaultFont;
     this.headerFooterFont = defaultFont.deriveFont(11f);
     this.level = 0;
+    //this allows us to repeatedly print, even though we never reset the level explicitly
+    //because HomePDFPrinter.java instantiates a new one every print, so we reset level to 0!!
     this.levelPageIndex = 0;
     
     try {
