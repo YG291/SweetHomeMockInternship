@@ -51,6 +51,7 @@ public class HomeFurnitureGroup extends HomePieceOfFurniture {
   private float                      fixedWidth;
   private float                      fixedDepth;
   private float                      fixedHeight;
+  private float                      fixedVolume;
   private float                      dropOnTopElevation; 
   private String                     currency;
   // Fields removed in version 5.2
@@ -91,7 +92,7 @@ public class HomeFurnitureGroup extends HomePieceOfFurniture {
   public HomeFurnitureGroup(List<HomePieceOfFurniture> furniture,
                             float angle, boolean modelMirrored,
                             String name) {
-    super(furniture.get(0));
+    super(furniture.get(0)); //here it gets its superclass as literally initialized w/ the first object
     this.furniture = Collections.unmodifiableList(furniture); 
     
     boolean movable = true;
@@ -115,6 +116,27 @@ public class HomeFurnitureGroup extends HomePieceOfFurniture {
     super.setModelMirrored(modelMirrored);
 
     addFurnitureListener();
+
+    float maxHeight = 0;
+    float maxDepth = 0;
+    float maxWidth = 0;
+
+    for(HomePieceOfFurniture piece : furniture)
+    {
+      if (piece.getHeight() > maxHeight)
+      {
+        maxHeight = piece.getHeight();
+      }
+      if (piece.getWidth() > maxWidth)
+      {
+        maxWidth = piece.getWidth();
+      }
+      if (piece.getDepth() > maxDepth)
+      {
+        maxDepth = piece.getDepth();
+      }
+    }
+    this.fixedVolume = maxDepth*maxHeight*maxWidth;
   }
 
   /**
@@ -224,6 +246,7 @@ public class HomeFurnitureGroup extends HomePieceOfFurniture {
       this.fixedWidth = (float)unrotatedBoundingRectangle.getWidth();
       this.fixedDepth = (float)unrotatedBoundingRectangle.getHeight();
       this.fixedHeight = height;
+      this.fixedVolume= fixedDepth*fixedWidth*fixedHeight;
     }
     this.dropOnTopElevation = dropOnTopElevation / height;
     super.setX((float)center.getX());
@@ -442,7 +465,19 @@ public class HomeFurnitureGroup extends HomePieceOfFurniture {
       return super.getHeight();
     }
   }
-  
+
+  /**
+   * Returns the volume of this group.
+   */
+  @Override
+  public float getVolume() {
+    if (!this.resizable) {
+      return this.fixedVolume;
+    } else {
+      return super.getVolume();
+    }
+  }
+
   /**
    * Returns the elevation at which should be placed an object dropped on this group.
    * @since 4.4 
@@ -842,6 +877,19 @@ public class HomeFurnitureGroup extends HomePieceOfFurniture {
         piece.addPropertyChangeListener(this.furnitureListener);
       }
       super.setElevation(elevation);
+    }
+  }
+
+  @Override
+  public void setVolume(float volume) {
+    if (volume != getVolume()) {
+      float volumeDelta = volume - getVolume();
+      for (HomePieceOfFurniture piece : this.furniture) {
+        piece.removePropertyChangeListener(this.furnitureListener);
+        piece.setVolume(piece.getVolume() + volumeDelta);
+        piece.addPropertyChangeListener(this.furnitureListener);
+      }
+      super.setVolume(volume);
     }
   }
   
