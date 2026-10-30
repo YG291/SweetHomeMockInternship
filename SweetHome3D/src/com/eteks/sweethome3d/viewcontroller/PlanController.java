@@ -5964,12 +5964,15 @@ public class PlanController extends FurnitureController implements Controller {
     private final float                width;
     private final float                depth;
     private final float                height;
+    private final float                volume;
     private final boolean              doorOrWindowBoundToWall;
     private final float []             groupFurnitureX;
     private final float []             groupFurnitureY;
     private final float []             groupFurnitureWidth;
     private final float []             groupFurnitureDepth;
     private final float []             groupFurnitureHeight;
+    private final float                groupFurnitureVolume;
+
 
     public ResizedPieceOfFurniture(HomePieceOfFurniture piece) {
       this.piece = piece;
@@ -5978,6 +5981,7 @@ public class PlanController extends FurnitureController implements Controller {
       this.width = piece.getWidth();
       this.depth = piece.getDepth();
       this.height = piece.getHeight();
+      this.volume = piece.getVolume();
       this.doorOrWindowBoundToWall = piece instanceof HomeDoorOrWindow 
           && ((HomeDoorOrWindow)piece).isBoundToWall();
       if (piece instanceof HomeFurnitureGroup) {
@@ -5987,6 +5991,7 @@ public class PlanController extends FurnitureController implements Controller {
         this.groupFurnitureWidth = new float [groupFurniture.size()];
         this.groupFurnitureDepth = new float [groupFurniture.size()];
         this.groupFurnitureHeight = new float [groupFurniture.size()];
+
         for (int i = 0; i < groupFurniture.size(); i++) {
           HomePieceOfFurniture groupPiece = groupFurniture.get(i);
           this.groupFurnitureX [i] = groupPiece.getX();
@@ -6002,6 +6007,7 @@ public class PlanController extends FurnitureController implements Controller {
         this.groupFurnitureDepth = null;
         this.groupFurnitureHeight = null;
       }
+      this.groupFurnitureVolume = piece.getVolume();
     }
 
     public HomePieceOfFurniture getPieceOfFurniture() {
@@ -6019,6 +6025,8 @@ public class PlanController extends FurnitureController implements Controller {
     public float getHeight() {
       return this.height;
     }
+
+    public float getVolume() {return this.volume;}
     
     public boolean isDoorOrWindowBoundToWall() {
       return this.doorOrWindowBoundToWall;
@@ -6030,6 +6038,7 @@ public class PlanController extends FurnitureController implements Controller {
       this.piece.setWidth(this.width);
       this.piece.setDepth(this.depth);
       this.piece.setHeight(this.height);
+      this.piece.setVolume(this.volume);
       if (this.piece instanceof HomeDoorOrWindow) {
         ((HomeDoorOrWindow)this.piece).setBoundToWall(this.doorOrWindowBoundToWall);
       }

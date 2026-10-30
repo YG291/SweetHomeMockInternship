@@ -91,8 +91,8 @@ public class HomeFurnitureGroup extends HomePieceOfFurniture {
   public HomeFurnitureGroup(List<HomePieceOfFurniture> furniture,
                             float angle, boolean modelMirrored,
                             String name) {
-    super(furniture.get(0));
-    this.furniture = Collections.unmodifiableList(furniture); 
+    super(furniture.get(0)); //here it gets its superclass as literally initialized w/ the first object
+    this.furniture = Collections.unmodifiableList(furniture);
     
     boolean movable = true;
     boolean visible = false;
@@ -442,7 +442,12 @@ public class HomeFurnitureGroup extends HomePieceOfFurniture {
       return super.getHeight();
     }
   }
-  
+
+  public float getVolume()
+  {
+    return getHeight()*getDepth()*getWidth();
+  }
+
   /**
    * Returns the elevation at which should be placed an object dropped on this group.
    * @since 4.4 
