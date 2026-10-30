@@ -2056,6 +2056,10 @@ public class PlanComponent extends JComponent implements PlanView, Scrollable, P
         //because pagespercolumn and pagesperrow are both 1
       } else {
         // Apply print scale to paper size expressed in 1/72nds of an inch
+        pagesPerRow = 1;
+        pagesPerColumn = 1;
+        rowIndex   = 0;
+        columnIndex = 0;
         printScale = this.home.getPrint().getPlanScale().floatValue() * LengthUnit.centimeterToInch(72);
         pagesPerRow = (int) (printedItemBounds.getWidth() * printScale / imageableWidth);
         if (printedItemBounds.getWidth() * printScale != imageableWidth) {
